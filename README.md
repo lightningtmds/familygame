@@ -56,7 +56,7 @@ Nota: a sala fica fixada ao primeiro jogo escolhido por quem a cria — se tenta
 
 1. No lobby, escolhe "Damas".
 2. 2 jogadores entram na mesma sala; ambos carregam em "Estou pronto".
-3. Regras portuguesas/brasileiras: tabuleiro 8x8, 12 peças por jogador. Peças normais só andam para a frente na diagonal, mas capturam nas 4 direções (também para trás). A dama, depois de promovida na última linha, "voa" — anda e captura a qualquer distância na diagonal.
+3. Tabuleiro 8x8, 12 peças por jogador. Peças normais só andam e capturam para a frente, na diagonal. A dama, depois de promovida na última linha, "voa" — anda e captura a qualquer distância, em qualquer direção diagonal.
 4. Captura é obrigatória; se houver mais que uma sequência de captura possível, só são permitidas as que capturam o maior número de peças (regra da maioria). Uma captura múltipla continua automaticamente com a mesma peça enquanto houver mais peças para capturar — exceto se a peça for promovida a meio da sequência, caso em que a jogada termina de imediato.
 5. Perde quem ficar sem peças ou sem jogadas possíveis. Quem ganha soma 1 ponto ao placar de sessão.
 

@@ -1,8 +1,9 @@
-// Regras puras de damas (variante portuguesa/brasileira) — sem estado.
+// Regras puras de damas — sem estado.
 // Tabuleiro 8x8, casas jogáveis onde (row + col) é ímpar.
-// Peças normais capturam nas 4 direções diagonais; dama "voa" (anda e
-// captura à distância). Captura obrigatória com regra de maioria: só são
-// legais as sequências que capturam o máximo de peças possível no turno.
+// Peças normais só andam e capturam para a frente; dama "voa" (anda e
+// captura à distância, em qualquer direção). Captura obrigatória com regra
+// de maioria: só são legais as sequências que capturam o máximo de peças
+// possível no turno.
 
 const DIAGONALS = [
   [-1, -1],
@@ -10,6 +11,11 @@ const DIAGONALS = [
   [1, -1],
   [1, 1],
 ];
+
+// Direções "para a frente" de uma peça simples, consoante o dono.
+function manDirections(owner) {
+  return owner === 0 ? [[1, -1], [1, 1]] : [[-1, -1], [-1, 1]];
+}
 
 export function inBounds(row, col) {
   return row >= 0 && row < 8 && col >= 0 && col < 8;
@@ -65,8 +71,7 @@ function generateSimpleMoves(board, row, col) {
       }
     }
   } else {
-    const dirs = piece.owner === 0 ? [[1, -1], [1, 1]] : [[-1, -1], [-1, 1]];
-    for (const [dr, dc] of dirs) {
+    for (const [dr, dc] of manDirections(piece.owner)) {
       const r = row + dr;
       const c = col + dc;
       if (inBounds(r, c) && !board[r][c]) moves.push({ row: r, col: c });
@@ -99,7 +104,7 @@ function generateCaptureHops(board, row, col) {
       }
     }
   } else {
-    for (const [dr, dc] of DIAGONALS) {
+    for (const [dr, dc] of manDirections(piece.owner)) {
       const mr = row + dr;
       const mc = col + dc;
       const lr = row + 2 * dr;
