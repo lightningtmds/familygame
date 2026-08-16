@@ -1,0 +1,70 @@
+.sc-card {
+  position: relative;
+  width: 64px;
+  height: 92px;
+  border-radius: 8px;
+  background: var(--ivory);
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.35);
+  font-family: var(--font-display);
+  font-weight: 700;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  padding: 4px;
+  flex-shrink: 0;
+}
+
+.sc-card:not(.sc-card-disabled):hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 14px rgba(0, 0, 0, 0.45);
+}
+
+.sc-card-small {
+  width: 48px;
+  height: 70px;
+}
+
+.sc-card-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.sc-card-highlight {
+  outline: 3px solid var(--brass-light);
+  outline-offset: 2px;
+}
+
+.sc-card-corner {
+  position: absolute;
+  font-size: 12px;
+  line-height: 1.05;
+  text-align: center;
+}
+
+.sc-card-corner-top {
+  top: 4px;
+  left: 6px;
+}
+
+.sc-card-corner-bottom {
+  bottom: 4px;
+  right: 6px;
+  transform: rotate(180deg);
+}
+
+.sc-card-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+}
+
+.sc-card-back {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--wood) 0 6px,
+    var(--wood-light) 6px 12px
+  );
+  border: 1px solid rgba(0, 0, 0, 0.4);
+}
