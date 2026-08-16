@@ -1,6 +1,6 @@
 # Sueca Online
 
-Jogo de sueca (4 jogadores, uma partida em simultâneo por sala) — backend Node.js + Socket.io, frontend React PWA.
+Sueca, dominó e damas (uma partida em simultâneo por sala) — backend Node.js + Socket.io, frontend React PWA.
 
 ## Estrutura
 
@@ -51,6 +51,14 @@ Fica a correr em `http://localhost:5173`. Abre em 4 separadores/dispositivos dif
 6. Quem ganha soma ao placar de sessão as pintas que sobraram na mão do adversário.
 
 Nota: a sala fica fixada ao primeiro jogo escolhido por quem a cria — se tentares entrar numa sala "mesa-1" já a jogar sueca com o dominó selecionado, o servidor avisa-te e tens de escolher outro nome de sala.
+
+## Como jogar — Damas
+
+1. No lobby, escolhe "Damas".
+2. 2 jogadores entram na mesma sala; ambos carregam em "Estou pronto".
+3. Regras portuguesas/brasileiras: tabuleiro 8x8, 12 peças por jogador. Peças normais só andam para a frente na diagonal, mas capturam nas 4 direções (também para trás). A dama, depois de promovida na última linha, "voa" — anda e captura a qualquer distância na diagonal.
+4. Captura é obrigatória; se houver mais que uma sequência de captura possível, só são permitidas as que capturam o maior número de peças (regra da maioria). Uma captura múltipla continua automaticamente com a mesma peça enquanto houver mais peças para capturar — exceto se a peça for promovida a meio da sequência, caso em que a jogada termina de imediato.
+5. Perde quem ficar sem peças ou sem jogadas possíveis. Quem ganha soma 1 ponto ao placar de sessão.
 
 ## Notas de arquitetura
 

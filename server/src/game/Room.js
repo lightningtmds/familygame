@@ -1,15 +1,16 @@
 import { Game as SuecaGame } from "./Game.js";
 import { DominoGame } from "./domino/DominoGame.js";
+import { CheckersGame } from "./checkers/CheckersGame.js";
 
-const MAX_PLAYERS = { sueca: 4, domino: 2 };
+const MAX_PLAYERS = { sueca: 4, domino: 2, checkers: 2 };
 
 export class Room {
   constructor(id, gameType) {
     this.id = id;
-    this.gameType = gameType; // "sueca" | "domino" — fixado pelo 1º jogador a entrar
+    this.gameType = gameType; // "sueca" | "domino" | "checkers" — fixado pelo 1º jogador a entrar
     this.maxPlayers = MAX_PLAYERS[gameType];
     this.players = []; // { socketId, name, position, connected }
-    this.sessionScore = {}; // chaves dependem do jogo: team1/team2 (sueca) ou p0/p1 (dominó)
+    this.sessionScore = {}; // chaves dependem do jogo: team1/team2 (sueca) ou p0/p1 (dominó/damas)
     this.game = null;
     this.leadPosition = 0; // dealer (sueca) ou quem começa (dominó); roda a cada partida
     this.readySet = new Set();
@@ -55,8 +56,9 @@ export class Room {
   }
 
   startGame() {
-    this.game =
-      this.gameType === "sueca" ? new SuecaGame(this.leadPosition) : new DominoGame(this.leadPosition);
+    if (this.gameType === "sueca") this.game = new SuecaGame(this.leadPosition);
+    else if (this.gameType === "domino") this.game = new DominoGame(this.leadPosition);
+    else this.game = new CheckersGame(this.leadPosition);
     this.readySet.clear();
     return this.game;
   }

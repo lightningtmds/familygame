@@ -3,10 +3,12 @@ import { socket } from "./socket.js";
 import Lobby from "./components/Lobby.jsx";
 import GameTable from "./components/GameTable.jsx";
 import DominoTable from "./components/DominoTable.jsx";
+import CheckersBoard from "./components/CheckersBoard.jsx";
 import "./styles/global.css";
 import "./styles/card.css";
 import "./styles/table.css";
 import "./styles/domino.css";
+import "./styles/checkers.css";
 
 export default function App() {
   const [joined, setJoined] = useState(false);
@@ -106,6 +108,12 @@ export default function App() {
     });
   }, []);
 
+  const handleCheckersMove = useCallback((from, to) => {
+    socket.emit("checkers-move", { from, to }, (res) => {
+      if (!res.ok) setError(res.reason);
+    });
+  }, []);
+
   const handleNewRound = useCallback(() => {
     socket.emit("request-new-round");
     socket.emit("player-ready");
@@ -141,6 +149,18 @@ export default function App() {
           onPlay={handlePlayDomino}
           onDraw={handleDrawDomino}
           onPass={handlePassDomino}
+          roundOverInfo={roundOverInfo}
+          onNewRound={handleNewRound}
+          readyCount={readyCount}
+        />
+      ) : gameState.gameType === "checkers" ? (
+        <CheckersBoard
+          state={gameState}
+          myPosition={myPosition}
+          isSpectator={isSpectator}
+          players={players}
+          sessionScore={sessionScore}
+          onMove={handleCheckersMove}
           roundOverInfo={roundOverInfo}
           onNewRound={handleNewRound}
           readyCount={readyCount}

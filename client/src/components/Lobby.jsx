@@ -22,17 +22,23 @@ export default function Lobby({ onJoin, players, joined, readyCount, neededCount
               <span>Dominó</span>
               <span className="sc-game-choice-meta">2 jogadores · 1 vs 1</span>
             </button>
+            <button className="sc-game-choice" onClick={() => setSelectedGame("checkers")}>
+              <span className="sc-game-choice-icon">⛀</span>
+              <span>Damas</span>
+              <span className="sc-game-choice-meta">2 jogadores · 1 vs 1</span>
+            </button>
           </div>
         </div>
       );
     }
 
+    const GAME_LABEL = { sueca: "Sueca", domino: "Dominó", checkers: "Damas" };
+    const GAME_META = { sueca: "4 jogadores · 40 cartas", domino: "2 jogadores · 28 peças", checkers: "2 jogadores · tabuleiro 8x8" };
+
     return (
       <div className="sc-lobby">
-        <h1 className="sc-title">{selectedGame === "sueca" ? "Sueca" : "Dominó"}</h1>
-        <p className="sc-subtitle">
-          {selectedGame === "sueca" ? "4 jogadores · 40 cartas" : "2 jogadores · 28 peças"}
-        </p>
+        <h1 className="sc-title">{GAME_LABEL[selectedGame]}</h1>
+        <p className="sc-subtitle">{GAME_META[selectedGame]}</p>
 
         <label className="sc-field">
           Sala
@@ -57,7 +63,7 @@ export default function Lobby({ onJoin, players, joined, readyCount, neededCount
     );
   }
 
-  const totalSeats = neededCount || (gameType === "domino" ? 2 : 4);
+  const totalSeats = neededCount || (gameType === "sueca" ? 4 : 2);
 
   if (isSpectator) {
     return (
