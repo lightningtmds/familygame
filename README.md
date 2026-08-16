@@ -1,6 +1,6 @@
 # Sueca Online
 
-Sueca, dominó, damas e quatro em linha (uma partida em simultâneo por sala) — backend Node.js + Socket.io, frontend React PWA.
+Sueca, dominó, damas, quatro em linha e jogo do galo (uma partida em simultâneo por sala) — backend Node.js + Socket.io, frontend React PWA.
 
 ## Estrutura
 
@@ -66,6 +66,14 @@ Nota: a sala fica fixada ao primeiro jogo escolhido por quem a cria — se tenta
 2. 2 jogadores entram na mesma sala; ambos carregam em "Estou pronto".
 3. Tabuleiro 7 colunas x 6 linhas. Cada jogador, na sua vez, clica numa coluna para lá deixar cair uma peça — cai até à posição livre mais baixa dessa coluna.
 4. Ganha quem conseguir alinhar 4 peças suas seguidas na horizontal, vertical ou diagonal. Se o tabuleiro encher sem ninguém alinhar 4, é empate.
+5. Quem ganha soma 1 ponto ao placar de sessão; em caso de empate, ninguém pontua.
+
+## Como jogar — Jogo do Galo
+
+1. No lobby, escolhe "Jogo do Galo".
+2. 2 jogadores entram na mesma sala; ambos carregam em "Estou pronto".
+3. Tabuleiro 3x3. Jogador 0 joga com X, jogador 1 joga com O; clicam numa casa livre na sua vez.
+4. Ganha quem alinhar 3 seguidas na horizontal, vertical ou diagonal. Se o tabuleiro encher sem ninguém alinhar 3, é empate.
 5. Quem ganha soma 1 ponto ao placar de sessão; em caso de empate, ninguém pontua.
 
 ## Notas de arquitetura
