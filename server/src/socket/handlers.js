@@ -38,11 +38,26 @@ export function registerSocketHandlers(io, socket) {
     callback?.({ roomId: `${base}-${n}` });
   });
 
-  socket.on("join-game", ({ roomId, playerName, gameType }, callback) => {
+  socket.on("list-open-rooms", (_payload, callback) => {
+    const list = [...rooms.values()]
+      .filter((room) => room.players.some((p) => p.connected))
+      .map((room) => ({
+        roomId: room.id,
+        gameType: room.gameType,
+        inProgress: !!room.game,
+        playerCount: room.players.filter((p) => p.connected).length,
+        maxPlayers: room.maxPlayers,
+        spectatorCount: room.spectators.length,
+      }));
+    callback?.(list);
+  });
+
+  socket.on("join-game", ({ roomId, playerName, gameType, spectate }, callback) => {
     try {
       let room = rooms.get(roomId);
 
       if (!room) {
+        if (spectate) throw new Error("Essa sala já não existe");
         if (!GAME_LABEL[gameType]) {
           throw new Error("Escolhe um jogo válido");
         }
@@ -52,20 +67,25 @@ export function registerSocketHandlers(io, socket) {
         throw new Error(`Esta sala já está a jogar ${GAME_LABEL[room.gameType]}. Escolhe outra sala.`);
       }
 
-      // reconexão: mesmo nome numa posição já existente mas desligada
-      const existing = room.players.find((p) => p.name === playerName && !p.connected);
       let player = null;
       let isSpectator = false;
 
-      if (existing) {
-        existing.socketId = socket.id;
-        existing.connected = true;
-        player = existing;
-      } else if (!room.isFull()) {
-        player = room.addPlayer(socket.id, playerName);
-      } else {
+      if (spectate) {
         room.addSpectator(socket.id, playerName);
         isSpectator = true;
+      } else {
+        // reconexão: mesmo nome numa posição já existente mas desligada
+        const existing = room.players.find((p) => p.name === playerName && !p.connected);
+        if (existing) {
+          existing.socketId = socket.id;
+          existing.connected = true;
+          player = existing;
+        } else if (!room.isFull()) {
+          player = room.addPlayer(socket.id, playerName);
+        } else {
+          room.addSpectator(socket.id, playerName);
+          isSpectator = true;
+        }
       }
 
       socket.join(roomId);

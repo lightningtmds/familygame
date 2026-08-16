@@ -68,8 +68,8 @@ export default function App() {
     };
   }, []);
 
-  const handleJoin = useCallback((roomId, name, chosenGameType) => {
-    socket.emit("join-game", { roomId, playerName: name, gameType: chosenGameType }, (res) => {
+  const handleJoin = useCallback((roomId, name, chosenGameType, { spectate = false } = {}) => {
+    socket.emit("join-game", { roomId, playerName: name, gameType: chosenGameType, spectate }, (res) => {
       if (!res.ok) {
         setError(res.reason);
         return;

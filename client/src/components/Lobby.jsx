@@ -1,10 +1,28 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { socket } from "../socket.js";
+
+const GAME_LABEL = {
+  sueca: "Sueca",
+  domino: "Dominó",
+  checkers: "Damas",
+  connect4: "Quatro em Linha",
+  tictactoe: "Jogo do Galo",
+};
+const GAME_META = {
+  sueca: "4 jogadores · 40 cartas",
+  domino: "2 jogadores · 28 peças",
+  checkers: "2 jogadores · tabuleiro 8x8",
+  connect4: "2 jogadores · tabuleiro 7x6",
+  tictactoe: "2 jogadores · tabuleiro 3x3",
+};
 
 export default function Lobby({ onJoin, players, joined, readyCount, neededCount, onReady, gameType, isSpectator, spectatorCount }) {
   const [selectedGame, setSelectedGame] = useState(null);
+  const [spectateMode, setSpectateMode] = useState(false);
   const [roomId, setRoomId] = useState("sala-1");
   const [name, setName] = useState("");
+  const [openRooms, setOpenRooms] = useState([]);
+  const [loadingRooms, setLoadingRooms] = useState(false);
 
   // Sugere o próximo nome de sala livre (sala-1, sala-2, ...) sempre que se escolhe um jogo.
   useEffect(() => {
@@ -14,7 +32,65 @@ export default function Lobby({ onJoin, players, joined, readyCount, neededCount
     });
   }, [selectedGame]);
 
+  const fetchOpenRooms = useCallback(() => {
+    setLoadingRooms(true);
+    socket.emit("list-open-rooms", {}, (list) => {
+      setOpenRooms(list || []);
+      setLoadingRooms(false);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (spectateMode) fetchOpenRooms();
+  }, [spectateMode, fetchOpenRooms]);
+
   if (!joined) {
+    if (spectateMode) {
+      return (
+        <div className="sc-lobby">
+          <h1 className="sc-title">Tele-espectador</h1>
+          <p className="sc-subtitle">Escolhe uma sala para assistir, sem teres de saber o nome de cor</p>
+
+          <label className="sc-field">
+            O teu nome
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: Tiago" />
+          </label>
+
+          {loadingRooms ? (
+            <p className="sc-subtitle">A carregar salas...</p>
+          ) : openRooms.length === 0 ? (
+            <p className="sc-subtitle">Não há salas abertas neste momento.</p>
+          ) : (
+            <ul className="sc-room-list">
+              {openRooms.map((r) => (
+                <li key={r.roomId}>
+                  <button
+                    className="sc-room-item"
+                    disabled={!name.trim()}
+                    onClick={() => onJoin(r.roomId, name.trim(), r.gameType, { spectate: true })}
+                  >
+                    <span className="sc-room-item-name">{r.roomId}</span>
+                    <span className="sc-room-item-game">{GAME_LABEL[r.gameType] ?? r.gameType}</span>
+                    <span className="sc-room-item-status">
+                      {r.inProgress ? "A jogar" : "À espera de jogadores"} · {r.playerCount}/{r.maxPlayers} jogadores
+                      {r.spectatorCount > 0 ? ` · ${r.spectatorCount} a assistir` : ""}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <button className="sc-btn-link" onClick={fetchOpenRooms}>
+            ↻ Atualizar lista
+          </button>
+          <button className="sc-btn-link" onClick={() => setSpectateMode(false)}>
+            ← Voltar
+          </button>
+        </div>
+      );
+    }
+
     if (!selectedGame) {
       return (
         <div className="sc-lobby">
@@ -47,24 +123,12 @@ export default function Lobby({ onJoin, players, joined, readyCount, neededCount
               <span className="sc-game-choice-meta">2 jogadores · 1 vs 1</span>
             </button>
           </div>
+          <button className="sc-btn-link" onClick={() => setSpectateMode(true)}>
+            Tele-espectador — assistir a uma sala já aberta
+          </button>
         </div>
       );
     }
-
-    const GAME_LABEL = {
-      sueca: "Sueca",
-      domino: "Dominó",
-      checkers: "Damas",
-      connect4: "Quatro em Linha",
-      tictactoe: "Jogo do Galo",
-    };
-    const GAME_META = {
-      sueca: "4 jogadores · 40 cartas",
-      domino: "2 jogadores · 28 peças",
-      checkers: "2 jogadores · tabuleiro 8x8",
-      connect4: "2 jogadores · tabuleiro 7x6",
-      tictactoe: "2 jogadores · tabuleiro 3x3",
-    };
 
     return (
       <div className="sc-lobby">
@@ -100,7 +164,7 @@ export default function Lobby({ onJoin, players, joined, readyCount, neededCount
     return (
       <div className="sc-lobby">
         <h1 className="sc-title">A assistir</h1>
-        <p className="sc-subtitle">A sala está cheia — vais ver o jogo sem participar.</p>
+        <p className="sc-subtitle">Estás a assistir a este jogo sem participar.</p>
         <ul className="sc-player-list">
           {Array.from({ length: totalSeats }).map((_, pos) => {
             const p = players.find((pl) => pl.position === pos);
@@ -138,4 +202,3 @@ export default function Lobby({ onJoin, players, joined, readyCount, neededCount
     </div>
   );
 }
-
