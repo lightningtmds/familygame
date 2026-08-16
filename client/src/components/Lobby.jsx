@@ -27,13 +27,23 @@ export default function Lobby({ onJoin, players, joined, readyCount, neededCount
               <span>Damas</span>
               <span className="sc-game-choice-meta">2 jogadores · 1 vs 1</span>
             </button>
+            <button className="sc-game-choice" onClick={() => setSelectedGame("connect4")}>
+              <span className="sc-game-choice-icon">●</span>
+              <span>Quatro em Linha</span>
+              <span className="sc-game-choice-meta">2 jogadores · 1 vs 1</span>
+            </button>
           </div>
         </div>
       );
     }
 
-    const GAME_LABEL = { sueca: "Sueca", domino: "Dominó", checkers: "Damas" };
-    const GAME_META = { sueca: "4 jogadores · 40 cartas", domino: "2 jogadores · 28 peças", checkers: "2 jogadores · tabuleiro 8x8" };
+    const GAME_LABEL = { sueca: "Sueca", domino: "Dominó", checkers: "Damas", connect4: "Quatro em Linha" };
+    const GAME_META = {
+      sueca: "4 jogadores · 40 cartas",
+      domino: "2 jogadores · 28 peças",
+      checkers: "2 jogadores · tabuleiro 8x8",
+      connect4: "2 jogadores · tabuleiro 7x6",
+    };
 
     return (
       <div className="sc-lobby">

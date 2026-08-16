@@ -1,6 +1,7 @@
 import { Room } from "../game/Room.js";
 
 const rooms = new Map(); // roomId -> Room
+const GAME_LABEL = { sueca: "Sueca", domino: "Dominó", checkers: "Damas", connect4: "Quatro em Linha" };
 
 function broadcastGameState(io, room) {
   if (!room.game) return;
@@ -29,13 +30,12 @@ export function registerSocketHandlers(io, socket) {
       let room = rooms.get(roomId);
 
       if (!room) {
-        if (gameType !== "sueca" && gameType !== "domino" && gameType !== "checkers") {
+        if (!GAME_LABEL[gameType]) {
           throw new Error("Escolhe um jogo válido");
         }
         room = new Room(roomId, gameType);
         rooms.set(roomId, room);
       } else if (gameType && gameType !== room.gameType) {
-        const GAME_LABEL = { sueca: "Sueca", domino: "Dominó", checkers: "Damas" };
         throw new Error(`Esta sala já está a jogar ${GAME_LABEL[room.gameType]}. Escolhe outra sala.`);
       }
 
@@ -174,6 +174,22 @@ export function registerSocketHandlers(io, socket) {
 
     try {
       const result = room.game.move(socket.data.position, from, to);
+      callback?.({ ok: true });
+      broadcastGameState(io, room);
+      handleRoundOverIfNeeded(io, room, { roundOver: !!result.roundOver });
+    } catch (err) {
+      callback?.({ ok: false, reason: err.message });
+    }
+  });
+
+  // --- Quatro em Linha ---
+  socket.on("connect4-move", ({ column }, callback) => {
+    if (socket.data.spectator) return callback?.({ ok: false, reason: "Estás a assistir, não podes jogar" });
+    const room = rooms.get(socket.data.roomId);
+    if (!room?.game || room.gameType !== "connect4") return callback?.({ ok: false, reason: "Jogo não iniciado" });
+
+    try {
+      const result = room.game.move(socket.data.position, column);
       callback?.({ ok: true });
       broadcastGameState(io, room);
       handleRoundOverIfNeeded(io, room, { roundOver: !!result.roundOver });

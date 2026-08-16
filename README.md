@@ -1,6 +1,6 @@
 # Sueca Online
 
-Sueca, dominó e damas (uma partida em simultâneo por sala) — backend Node.js + Socket.io, frontend React PWA.
+Sueca, dominó, damas e quatro em linha (uma partida em simultâneo por sala) — backend Node.js + Socket.io, frontend React PWA.
 
 ## Estrutura
 
@@ -59,6 +59,14 @@ Nota: a sala fica fixada ao primeiro jogo escolhido por quem a cria — se tenta
 3. Tabuleiro 8x8, 12 peças por jogador. Peças normais só andam e capturam para a frente, na diagonal. A dama, depois de promovida na última linha, "voa" — anda e captura a qualquer distância, em qualquer direção diagonal.
 4. Captura é obrigatória; se houver mais que uma sequência de captura possível, só são permitidas as que capturam o maior número de peças (regra da maioria). Uma captura múltipla continua automaticamente com a mesma peça enquanto houver mais peças para capturar — exceto se a peça for promovida a meio da sequência, caso em que a jogada termina de imediato.
 5. Perde quem ficar sem peças ou sem jogadas possíveis. Quem ganha soma 1 ponto ao placar de sessão.
+
+## Como jogar — Quatro em Linha
+
+1. No lobby, escolhe "Quatro em Linha".
+2. 2 jogadores entram na mesma sala; ambos carregam em "Estou pronto".
+3. Tabuleiro 7 colunas x 6 linhas. Cada jogador, na sua vez, clica numa coluna para lá deixar cair uma peça — cai até à posição livre mais baixa dessa coluna.
+4. Ganha quem conseguir alinhar 4 peças suas seguidas na horizontal, vertical ou diagonal. Se o tabuleiro encher sem ninguém alinhar 4, é empate.
+5. Quem ganha soma 1 ponto ao placar de sessão; em caso de empate, ninguém pontua.
 
 ## Notas de arquitetura
 

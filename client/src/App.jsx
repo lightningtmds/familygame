@@ -4,11 +4,13 @@ import Lobby from "./components/Lobby.jsx";
 import GameTable from "./components/GameTable.jsx";
 import DominoTable from "./components/DominoTable.jsx";
 import CheckersBoard from "./components/CheckersBoard.jsx";
+import Connect4Board from "./components/Connect4Board.jsx";
 import "./styles/global.css";
 import "./styles/card.css";
 import "./styles/table.css";
 import "./styles/domino.css";
 import "./styles/checkers.css";
+import "./styles/connect4.css";
 
 export default function App() {
   const [joined, setJoined] = useState(false);
@@ -114,6 +116,12 @@ export default function App() {
     });
   }, []);
 
+  const handleConnect4Drop = useCallback((column) => {
+    socket.emit("connect4-move", { column }, (res) => {
+      if (!res.ok) setError(res.reason);
+    });
+  }, []);
+
   const handleNewRound = useCallback(() => {
     socket.emit("request-new-round");
     socket.emit("player-ready");
@@ -161,6 +169,18 @@ export default function App() {
           players={players}
           sessionScore={sessionScore}
           onMove={handleCheckersMove}
+          roundOverInfo={roundOverInfo}
+          onNewRound={handleNewRound}
+          readyCount={readyCount}
+        />
+      ) : gameState.gameType === "connect4" ? (
+        <Connect4Board
+          state={gameState}
+          myPosition={myPosition}
+          isSpectator={isSpectator}
+          players={players}
+          sessionScore={sessionScore}
+          onDrop={handleConnect4Drop}
           roundOverInfo={roundOverInfo}
           onNewRound={handleNewRound}
           readyCount={readyCount}
