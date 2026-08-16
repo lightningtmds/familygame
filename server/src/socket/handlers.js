@@ -1,7 +1,13 @@
 import { Room } from "../game/Room.js";
 
 const rooms = new Map(); // roomId -> Room
-const GAME_LABEL = { sueca: "Sueca", domino: "Dominó", checkers: "Damas", connect4: "Quatro em Linha" };
+const GAME_LABEL = {
+  sueca: "Sueca",
+  domino: "Dominó",
+  checkers: "Damas",
+  connect4: "Quatro em Linha",
+  tictactoe: "Jogo do Galo",
+};
 
 function broadcastGameState(io, room) {
   if (!room.game) return;
@@ -190,6 +196,22 @@ export function registerSocketHandlers(io, socket) {
 
     try {
       const result = room.game.move(socket.data.position, column);
+      callback?.({ ok: true });
+      broadcastGameState(io, room);
+      handleRoundOverIfNeeded(io, room, { roundOver: !!result.roundOver });
+    } catch (err) {
+      callback?.({ ok: false, reason: err.message });
+    }
+  });
+
+  // --- Jogo do Galo ---
+  socket.on("tictactoe-move", ({ row, col }, callback) => {
+    if (socket.data.spectator) return callback?.({ ok: false, reason: "Estás a assistir, não podes jogar" });
+    const room = rooms.get(socket.data.roomId);
+    if (!room?.game || room.gameType !== "tictactoe") return callback?.({ ok: false, reason: "Jogo não iniciado" });
+
+    try {
+      const result = room.game.move(socket.data.position, row, col);
       callback?.({ ok: true });
       broadcastGameState(io, room);
       handleRoundOverIfNeeded(io, room, { roundOver: !!result.roundOver });

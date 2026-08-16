@@ -2,17 +2,24 @@ import { Game as SuecaGame } from "./Game.js";
 import { DominoGame } from "./domino/DominoGame.js";
 import { CheckersGame } from "./checkers/CheckersGame.js";
 import { Connect4Game } from "./connect4/Connect4Game.js";
+import { TicTacToeGame } from "./tictactoe/TicTacToeGame.js";
 
-const MAX_PLAYERS = { sueca: 4, domino: 2, checkers: 2, connect4: 2 };
-const GAME_CLASS = { sueca: SuecaGame, domino: DominoGame, checkers: CheckersGame, connect4: Connect4Game };
+const MAX_PLAYERS = { sueca: 4, domino: 2, checkers: 2, connect4: 2, tictactoe: 2 };
+const GAME_CLASS = {
+  sueca: SuecaGame,
+  domino: DominoGame,
+  checkers: CheckersGame,
+  connect4: Connect4Game,
+  tictactoe: TicTacToeGame,
+};
 
 export class Room {
   constructor(id, gameType) {
     this.id = id;
-    this.gameType = gameType; // "sueca" | "domino" | "checkers" | "connect4" — fixado pelo 1º jogador a entrar
+    this.gameType = gameType; // "sueca" | "domino" | "checkers" | "connect4" | "tictactoe" — fixado pelo 1º jogador a entrar
     this.maxPlayers = MAX_PLAYERS[gameType];
     this.players = []; // { socketId, name, position, connected }
-    this.sessionScore = {}; // chaves dependem do jogo: team1/team2 (sueca) ou p0/p1 (dominó/damas/4-em-linha)
+    this.sessionScore = {}; // chaves dependem do jogo: team1/team2 (sueca) ou p0/p1 (restantes)
     this.game = null;
     this.leadPosition = 0; // dealer (sueca) ou quem começa (dominó); roda a cada partida
     this.readySet = new Set();

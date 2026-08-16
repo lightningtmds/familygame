@@ -5,12 +5,14 @@ import GameTable from "./components/GameTable.jsx";
 import DominoTable from "./components/DominoTable.jsx";
 import CheckersBoard from "./components/CheckersBoard.jsx";
 import Connect4Board from "./components/Connect4Board.jsx";
+import TicTacToeBoard from "./components/TicTacToeBoard.jsx";
 import "./styles/global.css";
 import "./styles/card.css";
 import "./styles/table.css";
 import "./styles/domino.css";
 import "./styles/checkers.css";
 import "./styles/connect4.css";
+import "./styles/tictactoe.css";
 
 export default function App() {
   const [joined, setJoined] = useState(false);
@@ -122,6 +124,12 @@ export default function App() {
     });
   }, []);
 
+  const handleTicTacToePlay = useCallback((row, col) => {
+    socket.emit("tictactoe-move", { row, col }, (res) => {
+      if (!res.ok) setError(res.reason);
+    });
+  }, []);
+
   const handleNewRound = useCallback(() => {
     socket.emit("request-new-round");
     socket.emit("player-ready");
@@ -181,6 +189,18 @@ export default function App() {
           players={players}
           sessionScore={sessionScore}
           onDrop={handleConnect4Drop}
+          roundOverInfo={roundOverInfo}
+          onNewRound={handleNewRound}
+          readyCount={readyCount}
+        />
+      ) : gameState.gameType === "tictactoe" ? (
+        <TicTacToeBoard
+          state={gameState}
+          myPosition={myPosition}
+          isSpectator={isSpectator}
+          players={players}
+          sessionScore={sessionScore}
+          onPlay={handleTicTacToePlay}
           roundOverInfo={roundOverInfo}
           onNewRound={handleNewRound}
           readyCount={readyCount}

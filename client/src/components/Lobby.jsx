@@ -32,17 +32,29 @@ export default function Lobby({ onJoin, players, joined, readyCount, neededCount
               <span>Quatro em Linha</span>
               <span className="sc-game-choice-meta">2 jogadores · 1 vs 1</span>
             </button>
+            <button className="sc-game-choice" onClick={() => setSelectedGame("tictactoe")}>
+              <span className="sc-game-choice-icon">✕</span>
+              <span>Jogo do Galo</span>
+              <span className="sc-game-choice-meta">2 jogadores · 1 vs 1</span>
+            </button>
           </div>
         </div>
       );
     }
 
-    const GAME_LABEL = { sueca: "Sueca", domino: "Dominó", checkers: "Damas", connect4: "Quatro em Linha" };
+    const GAME_LABEL = {
+      sueca: "Sueca",
+      domino: "Dominó",
+      checkers: "Damas",
+      connect4: "Quatro em Linha",
+      tictactoe: "Jogo do Galo",
+    };
     const GAME_META = {
       sueca: "4 jogadores · 40 cartas",
       domino: "2 jogadores · 28 peças",
       checkers: "2 jogadores · tabuleiro 8x8",
       connect4: "2 jogadores · tabuleiro 7x6",
+      tictactoe: "2 jogadores · tabuleiro 3x3",
     };
 
     return (
