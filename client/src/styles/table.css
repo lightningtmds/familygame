@@ -82,10 +82,10 @@
 }
 
 .sc-game-choices {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 14px;
   margin-top: 24px;
-  justify-content: center;
 }
 
 .sc-game-choice {
@@ -93,12 +93,11 @@
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  padding: 22px 18px;
+  padding: 22px 12px;
   border-radius: 12px;
   border: 1px solid rgba(201, 162, 39, 0.35);
   background: var(--felt-dark);
   color: var(--ivory);
-  min-width: 130px;
   transition: border-color 0.15s ease, transform 0.1s ease;
 }
 
