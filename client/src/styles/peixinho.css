@@ -1,0 +1,83 @@
+.pk-table {
+  justify-content: flex-start;
+}
+
+.pk-last-action {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--brass-light);
+  margin: 4px 0 12px;
+  min-height: 1.2em;
+}
+
+.pk-opponents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin: 12px 0;
+}
+
+.pk-opponent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  background: var(--felt-dark);
+  color: var(--ivory);
+  transition: border-color 0.15s ease, transform 0.1s ease;
+}
+
+.pk-opponent:not(:disabled):hover {
+  border-color: var(--brass-light);
+  transform: translateY(-2px);
+}
+
+.pk-opponent:disabled {
+  cursor: default;
+  opacity: 0.75;
+}
+
+.pk-opponent-selected {
+  outline: 3px solid var(--brass-light);
+  outline-offset: -3px;
+}
+
+.pk-opponent-name {
+  font-weight: 700;
+}
+
+.pk-opponent-meta {
+  font-size: 0.75rem;
+  color: rgba(242, 234, 216, 0.65);
+}
+
+.pk-my-books {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.pk-book-chip {
+  background: rgba(201, 162, 39, 0.25);
+  border: 1px solid var(--brass-light);
+  color: var(--ivory);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+}
+
+.pk-final-scores {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}

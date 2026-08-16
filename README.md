@@ -1,6 +1,6 @@
 # Sueca Online
 
-Sueca, dominó, damas, quatro em linha e jogo do galo (uma partida em simultâneo por sala) — backend Node.js + Socket.io, frontend React PWA.
+Sueca, dominó, damas, quatro em linha, jogo do galo e peixinho (uma partida em simultâneo por sala) — backend Node.js + Socket.io, frontend React PWA.
 
 ## Estrutura
 
@@ -75,6 +75,17 @@ Nota: a sala fica fixada ao primeiro jogo escolhido por quem a cria — se tenta
 3. Tabuleiro 3x3. Jogador 0 joga com X, jogador 1 joga com O; clicam numa casa livre na sua vez.
 4. Ganha quem alinhar 3 seguidas na horizontal, vertical ou diagonal. Se o tabuleiro encher sem ninguém alinhar 3, é empate.
 5. Quem ganha soma 1 ponto ao placar de sessão; em caso de empate, ninguém pontua.
+
+## Como jogar — Peixinho
+
+1. No lobby, escolhe "Peixinho".
+2. Entre 2 e 5 jogadores entram na mesma sala. Ao contrário dos outros jogos, não é preciso encher a sala — assim que todos os presentes carregarem em "Estou pronto" (com pelo menos 2 jogadores), o jogo começa.
+3. Baralho de 52 cartas (com 8, 9 e 10). Cada jogador recebe 7 cartas (2-3 jogadores) ou 5 cartas (4-5 jogadores); o resto fica no monte.
+4. Na tua vez, escolhe um adversário e pede-lhe um valor que já tenhas na tua mão (ex: "tens Reis?").
+   - Se ele tiver, dá-te todas as cartas desse valor e voltas a jogar (podes pedir outra vez, ao mesmo ou a outro adversário).
+   - Se não tiver, "vai pescar": tiras a carta do topo do monte. Se calhar ser o valor que pediste, voltas a jogar; senão, passa a vez ao jogador seguinte.
+5. Sempre que ficas com as 4 cartas do mesmo valor, formas um "peixinho" — as 4 cartas saem da tua mão e contam um ponto.
+6. O jogo acaba quando os 13 peixinhos possíveis estiverem todos formados. Ganha quem tiver mais peixinhos (pode haver empate); cada peixinho soma 1 ponto ao placar de sessão.
 
 ## Notas de arquitetura
 

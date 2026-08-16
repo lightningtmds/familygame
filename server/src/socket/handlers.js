@@ -7,6 +7,7 @@ const GAME_LABEL = {
   checkers: "Damas",
   connect4: "Quatro em Linha",
   tictactoe: "Jogo do Galo",
+  peixinho: "Peixinho",
 };
 
 function broadcastGameState(io, room) {
@@ -25,9 +26,14 @@ function roomUpdatePayload(room) {
     players: room.publicPlayers(),
     sessionScore: room.sessionScore,
     gameType: room.gameType,
+    minPlayers: room.minPlayers,
     maxPlayers: room.maxPlayers,
     spectatorCount: room.spectators.length,
   };
+}
+
+function readyNeeded(room) {
+  return Math.max(room.minPlayers, room.players.length);
 }
 
 export function registerSocketHandlers(io, socket) {
@@ -102,6 +108,7 @@ export function registerSocketHandlers(io, socket) {
         position: isSpectator ? null : player.position,
         players: room.publicPlayers(),
         gameType: room.gameType,
+        minPlayers: room.minPlayers,
         maxPlayers: room.maxPlayers,
         spectatorCount: room.spectators.length,
       });
@@ -122,7 +129,7 @@ export function registerSocketHandlers(io, socket) {
     if (!room) return;
 
     const allReady = room.markReady(socket.id);
-    io.to(room.id).emit("ready-update", { readyCount: room.readySet.size, needed: room.maxPlayers });
+    io.to(room.id).emit("ready-update", { readyCount: room.readySet.size, needed: readyNeeded(room) });
 
     if (allReady && room.allConnected()) {
       const game = room.startGame();
@@ -247,12 +254,28 @@ export function registerSocketHandlers(io, socket) {
     }
   });
 
+  // --- Peixinho ---
+  socket.on("peixinho-ask", ({ targetPosition, rank }, callback) => {
+    if (socket.data.spectator) return callback?.({ ok: false, reason: "Estás a assistir, não podes jogar" });
+    const room = rooms.get(socket.data.roomId);
+    if (!room?.game || room.gameType !== "peixinho") return callback?.({ ok: false, reason: "Jogo não iniciado" });
+
+    try {
+      const result = room.game.ask(socket.data.position, targetPosition, rank);
+      callback?.({ ok: true });
+      broadcastGameState(io, room);
+      handleRoundOverIfNeeded(io, room, { roundOver: !!result.roundOver });
+    } catch (err) {
+      callback?.({ ok: false, reason: err.message });
+    }
+  });
+
   socket.on("request-new-round", () => {
     if (socket.data.spectator) return;
     const room = rooms.get(socket.data.roomId);
     if (!room || room.game) return;
     room.readySet.clear();
-    io.to(room.id).emit("ready-update", { readyCount: 0, needed: room.maxPlayers });
+    io.to(room.id).emit("ready-update", { readyCount: 0, needed: readyNeeded(room) });
   });
 
   socket.on("disconnect", () => {

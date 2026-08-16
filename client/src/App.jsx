@@ -6,6 +6,7 @@ import DominoTable from "./components/DominoTable.jsx";
 import CheckersBoard from "./components/CheckersBoard.jsx";
 import Connect4Board from "./components/Connect4Board.jsx";
 import TicTacToeBoard from "./components/TicTacToeBoard.jsx";
+import PeixinhoTable from "./components/PeixinhoTable.jsx";
 import "./styles/global.css";
 import "./styles/card.css";
 import "./styles/table.css";
@@ -13,6 +14,7 @@ import "./styles/domino.css";
 import "./styles/checkers.css";
 import "./styles/connect4.css";
 import "./styles/tictactoe.css";
+import "./styles/peixinho.css";
 
 export default function App() {
   const [joined, setJoined] = useState(false);
@@ -20,6 +22,7 @@ export default function App() {
   const [isSpectator, setIsSpectator] = useState(false);
   const [players, setPlayers] = useState([]);
   const [gameType, setGameType] = useState(null);
+  const [minPlayers, setMinPlayers] = useState(null);
   const [maxPlayers, setMaxPlayers] = useState(null);
   const [spectatorCount, setSpectatorCount] = useState(0);
   const [sessionScore, setSessionScore] = useState({});
@@ -32,10 +35,11 @@ export default function App() {
   useEffect(() => {
     socket.connect();
 
-    socket.on("room-update", ({ players, sessionScore, gameType, maxPlayers, spectatorCount }) => {
+    socket.on("room-update", ({ players, sessionScore, gameType, minPlayers, maxPlayers, spectatorCount }) => {
       setPlayers(players);
       setSessionScore(sessionScore);
       setGameType(gameType);
+      setMinPlayers(minPlayers);
       setMaxPlayers(maxPlayers);
       setSpectatorCount(spectatorCount ?? 0);
     });
@@ -78,6 +82,7 @@ export default function App() {
       setIsSpectator(res.spectator);
       setPlayers(res.players);
       setGameType(res.gameType);
+      setMinPlayers(res.minPlayers);
       setMaxPlayers(res.maxPlayers);
       setSpectatorCount(res.spectatorCount ?? 0);
       setJoined(true);
@@ -130,6 +135,12 @@ export default function App() {
     });
   }, []);
 
+  const handlePeixinhoAsk = useCallback((targetPosition, rank) => {
+    socket.emit("peixinho-ask", { targetPosition, rank }, (res) => {
+      if (!res.ok) setError(res.reason);
+    });
+  }, []);
+
   const handleNewRound = useCallback(() => {
     socket.emit("request-new-round");
     socket.emit("player-ready");
@@ -152,6 +163,8 @@ export default function App() {
           neededCount={neededCount ?? maxPlayers}
           onReady={handleReady}
           gameType={gameType}
+          minPlayers={minPlayers}
+          maxPlayers={maxPlayers}
           isSpectator={isSpectator}
           spectatorCount={spectatorCount}
         />
@@ -201,6 +214,18 @@ export default function App() {
           players={players}
           sessionScore={sessionScore}
           onPlay={handleTicTacToePlay}
+          roundOverInfo={roundOverInfo}
+          onNewRound={handleNewRound}
+          readyCount={readyCount}
+        />
+      ) : gameState.gameType === "peixinho" ? (
+        <PeixinhoTable
+          state={gameState}
+          myPosition={myPosition}
+          isSpectator={isSpectator}
+          players={players}
+          sessionScore={sessionScore}
+          onAsk={handlePeixinhoAsk}
           roundOverInfo={roundOverInfo}
           onNewRound={handleNewRound}
           readyCount={readyCount}

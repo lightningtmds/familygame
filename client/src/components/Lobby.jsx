@@ -7,6 +7,7 @@ const GAME_LABEL = {
   checkers: "Damas",
   connect4: "Quatro em Linha",
   tictactoe: "Jogo do Galo",
+  peixinho: "Peixinho",
 };
 const GAME_META = {
   sueca: "4 jogadores · 40 cartas",
@@ -14,9 +15,10 @@ const GAME_META = {
   checkers: "2 jogadores · tabuleiro 8x8",
   connect4: "2 jogadores · tabuleiro 7x6",
   tictactoe: "2 jogadores · tabuleiro 3x3",
+  peixinho: "2 a 5 jogadores · 52 cartas",
 };
 
-export default function Lobby({ onJoin, players, joined, readyCount, neededCount, onReady, gameType, isSpectator, spectatorCount }) {
+export default function Lobby({ onJoin, players, joined, readyCount, neededCount, onReady, gameType, minPlayers, maxPlayers, isSpectator, spectatorCount }) {
   const [selectedGame, setSelectedGame] = useState(null);
   const [spectateMode, setSpectateMode] = useState(false);
   const [roomId, setRoomId] = useState("sala-1");
@@ -122,6 +124,11 @@ export default function Lobby({ onJoin, players, joined, readyCount, neededCount
               <span>Jogo do Galo</span>
               <span className="sc-game-choice-meta">2 jogadores · 1 vs 1</span>
             </button>
+            <button className="sc-game-choice" onClick={() => setSelectedGame("peixinho")}>
+              <span className="sc-game-choice-icon">🐟</span>
+              <span>Peixinho</span>
+              <span className="sc-game-choice-meta">2 a 5 jogadores</span>
+            </button>
           </div>
           <button className="sc-btn-link" onClick={() => setSpectateMode(true)}>
             Tele-espectador — assistir a uma sala já aberta
@@ -158,6 +165,9 @@ export default function Lobby({ onJoin, players, joined, readyCount, neededCount
     );
   }
 
+  // Jogos de número variável de jogadores (ex: Peixinho) não obrigam a encher
+  // a sala — basta atingir o mínimo e todos os presentes estarem prontos.
+  const isVariablePlayers = minPlayers != null && maxPlayers != null && minPlayers !== maxPlayers;
   const totalSeats = neededCount || (gameType === "sueca" ? 4 : 2);
 
   if (isSpectator) {
@@ -166,16 +176,53 @@ export default function Lobby({ onJoin, players, joined, readyCount, neededCount
         <h1 className="sc-title">A assistir</h1>
         <p className="sc-subtitle">Estás a assistir a este jogo sem participar.</p>
         <ul className="sc-player-list">
-          {Array.from({ length: totalSeats }).map((_, pos) => {
-            const p = players.find((pl) => pl.position === pos);
-            return (
-              <li key={pos} className={p?.connected ? "sc-player-online" : "sc-player-offline"}>
-                {p ? p.name : "— vazio —"}
-              </li>
-            );
-          })}
+          {isVariablePlayers
+            ? players.map((p) => (
+                <li key={p.position} className={p.connected ? "sc-player-online" : "sc-player-offline"}>
+                  {p.name}
+                </li>
+              ))
+            : Array.from({ length: totalSeats }).map((_, pos) => {
+                const p = players.find((pl) => pl.position === pos);
+                return (
+                  <li key={pos} className={p?.connected ? "sc-player-online" : "sc-player-offline"}>
+                    {p ? p.name : "— vazio —"}
+                  </li>
+                );
+              })}
         </ul>
-        <p className="sc-subtitle">{readyCount}/{totalSeats} prontos{spectatorCount > 1 ? ` · ${spectatorCount} a assistir` : ""}</p>
+        <p className="sc-subtitle">
+          {readyCount}/{isVariablePlayers ? players.length : totalSeats} prontos
+          {spectatorCount > 1 ? ` · ${spectatorCount} a assistir` : ""}
+        </p>
+      </div>
+    );
+  }
+
+  if (isVariablePlayers) {
+    const canReady = players.length >= minPlayers;
+    return (
+      <div className="sc-lobby">
+        <h1 className="sc-title">À espera de jogadores</h1>
+        <ul className="sc-player-list">
+          {players.map((p) => (
+            <li key={p.position} className={p.connected ? "sc-player-online" : "sc-player-offline"}>
+              {p.name}
+            </li>
+          ))}
+        </ul>
+        <p className="sc-subtitle">
+          {players.length} jogador{players.length === 1 ? "" : "es"} na sala (mínimo {minPlayers}, máximo {maxPlayers})
+          {" · "}
+          {readyCount}/{players.length} prontos
+          {spectatorCount > 0 ? ` · ${spectatorCount} a assistir` : ""}
+        </p>
+        <button className="sc-btn-primary" onClick={onReady} disabled={!canReady}>
+          Estou pronto
+        </button>
+        {!canReady && (
+          <p className="sc-subtitle">Precisas de pelo menos {minPlayers} jogadores para começar.</p>
+        )}
       </div>
     );
   }
