@@ -1,9 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { socket } from "../socket.js";
 
 export default function Lobby({ onJoin, players, joined, readyCount, neededCount, onReady, gameType, isSpectator, spectatorCount }) {
   const [selectedGame, setSelectedGame] = useState(null);
-  const [roomId, setRoomId] = useState("mesa-1");
+  const [roomId, setRoomId] = useState("sala-1");
   const [name, setName] = useState("");
+
+  // Sugere o próximo nome de sala livre (sala-1, sala-2, ...) sempre que se escolhe um jogo.
+  useEffect(() => {
+    if (!selectedGame) return;
+    socket.emit("suggest-room-name", { prefix: "sala" }, (res) => {
+      if (res?.roomId) setRoomId(res.roomId);
+    });
+  }, [selectedGame]);
 
   if (!joined) {
     if (!selectedGame) {
@@ -74,7 +83,7 @@ export default function Lobby({ onJoin, players, joined, readyCount, neededCount
         <button
           className="sc-btn-primary"
           disabled={!name.trim()}
-          onClick={() => onJoin(roomId.trim() || "mesa-1", name.trim(), selectedGame)}
+          onClick={() => onJoin(roomId.trim() || "sala-1", name.trim(), selectedGame)}
         >
           Entrar na mesa
         </button>

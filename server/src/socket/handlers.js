@@ -31,6 +31,13 @@ function roomUpdatePayload(room) {
 }
 
 export function registerSocketHandlers(io, socket) {
+  socket.on("suggest-room-name", ({ prefix } = {}, callback) => {
+    const base = (prefix || "sala").trim() || "sala";
+    let n = 1;
+    while (rooms.has(`${base}-${n}`)) n++;
+    callback?.({ roomId: `${base}-${n}` });
+  });
+
   socket.on("join-game", ({ roomId, playerName, gameType }, callback) => {
     try {
       let room = rooms.get(roomId);
